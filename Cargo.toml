@@ -6,6 +6,7 @@ description = "DHL Tracking for Business Customers"
 homepage = "https://github.com/Thomas-Zenkel/dhl_tracking"
 repository = "https://github.com/Thomas-Zenkel/dhl_tracking"
 readme = "README.md"
+license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
