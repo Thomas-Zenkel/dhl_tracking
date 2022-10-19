@@ -1,8 +1,10 @@
 use std::error::Error;
+
 static BASE_URL_PRODUCTION: &'static str =
     "https://cig.dhl.de/services/production/rest/sendungsverfolgung?xml=";
 static BASE_URL_SANDBOX: &'static str =
     "https://cig.dhl.de/services/sandbox/rest/sendungsverfolgung?xml=";
+
 static SANDBOX_XML_PARAM: &'static str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?> <data appname="zt12345" language-code="{language_code}" password="geheim" piece-code="00340434161094022115" request="d-get-piece-detail"/>"#;
 static PRODUCTION_XML_PARAM: &'static str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?> <data appname="{zt_kennung}" language-code="{language_code}" password="{passwd_zt_kennung}" piece-code="{sendungsnummer}" request="d-get-piece-detail"/>"#;
 pub struct SendungsverfolgungBuilder {
