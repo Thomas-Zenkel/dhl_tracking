@@ -1,12 +1,11 @@
 use std::error::Error;
 
-static BASE_URL_PRODUCTION: &'static str =
+static BASE_URL_PRODUCTION: &str =
     "https://cig.dhl.de/services/production/rest/sendungsverfolgung?xml=";
-static BASE_URL_SANDBOX: &'static str =
-    "https://cig.dhl.de/services/sandbox/rest/sendungsverfolgung?xml=";
+static BASE_URL_SANDBOX: &str = "https://cig.dhl.de/services/sandbox/rest/sendungsverfolgung?xml=";
 
-static SANDBOX_XML_PARAM: &'static str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?> <data appname="zt12345" language-code="{language_code}" password="geheim" piece-code="00340434161094022115" request="d-get-piece-detail"/>"#;
-static PRODUCTION_XML_PARAM: &'static str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?> <data appname="{zt_kennung}" language-code="{language_code}" password="{passwd_zt_kennung}" piece-code="{sendungsnummer}" request="d-get-piece-detail"/>"#;
+static SANDBOX_XML_PARAM: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?> <data appname="zt12345" language-code="{language_code}" password="geheim" piece-code="00340434161094022115" request="d-get-piece-detail"/>"#;
+static PRODUCTION_XML_PARAM: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?> <data appname="{zt_kennung}" language-code="{language_code}" password="{passwd_zt_kennung}" piece-code="{sendungsnummer}" request="d-get-piece-detail"/>"#;
 pub struct SendungsverfolgungBuilder {
     zt_kennung: Option<String>,
     passwd_zt_kennung: Option<String>,
@@ -16,6 +15,12 @@ pub struct SendungsverfolgungBuilder {
     sandbox: Option<bool>,
     app_id: Option<String>,
     app_token: Option<String>,
+}
+
+impl Default for SendungsverfolgungBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 impl SendungsverfolgungBuilder {
     pub fn new() -> SendungsverfolgungBuilder {
@@ -82,7 +87,7 @@ impl SendungsverfolgungBuilder {
         let entwickler_id = match self.entwickler_id {
             Some(entwickler_id) => Some(entwickler_id),
             None => {
-                if sandbox == true {
+                if sandbox {
                     //Sandbox needs entwickler_id
                     return Err("Entwickler ID not set. Needet in sandbox mode.".into());
                 } else {
@@ -186,17 +191,13 @@ impl Sendungsverfolgung {
             xml_param = xml_param.replace("{sendungsnummer}", sendungsnummer);
             xml_param = xml_param.replace(
                 "{zt_kennung}",
-                &self
-                    .zt_kennung
-                    .as_ref()
-                    .ok_or::<Box<dyn Error>>("zt_kennung not set.".into())?,
+                self.zt_kennung.as_ref().ok_or("zt_kennung not set.")?,
             );
             xml_param = xml_param.replace(
                 "{passwd_zt_kennung}",
-                &self
-                    .passwd_zt_kennung
+                self.passwd_zt_kennung
                     .as_ref()
-                    .ok_or::<Box<dyn Error>>("passwd_zt_kennung not set.".into())?,
+                    .ok_or("passwd_zt_kennung not set.")?,
             );
         }
         let url = {
@@ -212,22 +213,18 @@ impl Sendungsverfolgung {
             if self.sandbox {
                 self.entwickler_id
                     .as_ref()
-                    .ok_or::<Box<dyn Error>>("entwickler_id not set.".into())?
+                    .ok_or("entwickler_id not set.")?
             } else {
-                self.app_id
-                    .as_ref()
-                    .ok_or::<Box<dyn Error>>("app_id not set.".into())?
+                self.app_id.as_ref().ok_or("app_id not set.")?
             }
         };
         let auth_password = {
             if self.sandbox {
                 self.passwd_entwicklerportal
                     .as_ref()
-                    .ok_or::<Box<dyn Error>>("passwd_entwicklerportal not set.".into())?
+                    .ok_or("passwd_entwicklerportal not set.")?
             } else {
-                self.app_token
-                    .as_ref()
-                    .ok_or::<Box<dyn Error>>("app_token not set.".into())?
+                self.app_token.as_ref().ok_or("app_token not set.")?
             }
         };
 

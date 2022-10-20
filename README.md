@@ -28,7 +28,7 @@ let sendungsverfolgung = sendungsverfolgung::SendungsverfolgungBuilder::new()
         .unwrap();
 
     let delivery_data = sendungsverfolgung
-        .get_piece_detail("00300000000000000000".to_owned())
+        .get_piece_detail("00300000000000000000")
         .unwrap();
 ```
 
