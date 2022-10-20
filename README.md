@@ -18,9 +18,11 @@ fn main() {
 ```
 Production request:
 ```rust
-let sendungsverfolgung = sendungsverfolgung::SendungsverfolgungBuilder::new()
+use dhl_tracking::SendungsverfolgungBuilder;
+
+let sendungsverfolgung = SendungsverfolgungBuilder::new()
         .zt_kennung("ztxxxxx".to_owned())
-        .passwd_zt_kennung("your password".to_string())
+        .passwd_zt_kennung("your password".to_owned())
         .app_token("your token".to_owned())
         .app_id("your app id".to_owned())
         .sandbox(false)

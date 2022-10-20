@@ -6,6 +6,37 @@ static BASE_URL_SANDBOX: &str = "https://cig.dhl.de/services/sandbox/rest/sendun
 
 static SANDBOX_XML_PARAM: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?> <data appname="zt12345" language-code="{language_code}" password="geheim" piece-code="00340434161094022115" request="d-get-piece-detail"/>"#;
 static PRODUCTION_XML_PARAM: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?> <data appname="{zt_kennung}" language-code="{language_code}" password="{passwd_zt_kennung}" piece-code="{sendungsnummer}" request="d-get-piece-detail"/>"#;
+/// Builds Sendungsverfolgung Struct for Sandbox
+/// ```
+/// use dhl_tracking::SendungsverfolgungBuilder;
+///
+/// fn main() {
+///    let sv = SendungsverfolgungBuilder::new()
+///        .sandbox(true)
+///        .passwd_entwicklerportal("your login-password entwicklerportal".to_string())
+///        .entwickler_id("EntwicklerID from Konto".to_owned())
+///        .build()
+///        .unwrap();
+///    println!("{:?}", sv.get_piece_detail("00340434161094022115").unwrap());
+/// }    
+/// ```
+///
+/// Builds Sendungsverfolgung Struct for Production
+/// ```
+/// use dhl_tracking::SendungsverfolgungBuilder;
+/// let sendungsverfolgung = SendungsverfolgungBuilder::new()
+/// .zt_kennung("ztxxxxx".to_owned())
+/// .passwd_zt_kennung("your password".to_owned())
+/// .app_token("your token".to_owned())
+/// .app_id("your app id".to_owned())
+/// .sandbox(false)
+/// .build()
+/// .unwrap();
+///
+/// let delivery_data = sendungsverfolgung
+/// .get_piece_detail("00300000000000000000")
+/// .unwrap();
+/// ```
 pub struct SendungsverfolgungBuilder {
     zt_kennung: Option<String>,
     passwd_zt_kennung: Option<String>,
@@ -160,7 +191,37 @@ impl SendungsverfolgungBuilder {
     }
 }
 
-/// Sendungsverfolgung mit Daten die zum Abruf der Sendungsdaten benötigt werden.
+/// Builds Sendungsverfolgung Struct for Sandbox
+/// ```
+/// use dhl_tracking::SendungsverfolgungBuilder;
+///
+/// fn main() {
+///    let sv = SendungsverfolgungBuilder::new()
+///        .sandbox(true)
+///        .passwd_entwicklerportal("your login-password entwicklerportal".to_string())
+///        .entwickler_id("EntwicklerID from Konto".to_owned())
+///        .build()
+///        .unwrap();
+///    println!("{:?}", sv.get_piece_detail("00340434161094022115").unwrap());
+/// }    
+/// ```
+///
+/// Builds Sendungsverfolgung Struct for Production
+/// ```
+/// use dhl_tracking::SendungsverfolgungBuilder;
+/// let sendungsverfolgung = SendungsverfolgungBuilder::new()
+/// .zt_kennung("ztxxxxx".to_owned())
+/// .passwd_zt_kennung("your password".to_owned())
+/// .app_token("your token".to_owned())
+/// .app_id("your app id".to_owned())
+/// .sandbox(false)
+/// .build()
+/// .unwrap();
+///
+/// let delivery_data = sendungsverfolgung
+/// .get_piece_detail("00300000000000000000")
+/// .unwrap();
+/// ```
 #[derive(Debug)]
 pub struct Sendungsverfolgung {
     zt_kennung: Option<String>,
@@ -173,6 +234,7 @@ pub struct Sendungsverfolgung {
     app_token: Option<String>,
 }
 impl Sendungsverfolgung {
+    /// Retrieves shipment number data from DHL and returns either the body of the response or an HTTP error.
     /// Ruft Daten zur Sendungsnummer von DHL ab und gibt entweder den Body der Antwort zurück oder einen HTTP Fehler.
     pub fn get_piece_detail(
         &self,
@@ -191,13 +253,15 @@ impl Sendungsverfolgung {
             xml_param = xml_param.replace("{sendungsnummer}", sendungsnummer);
             xml_param = xml_param.replace(
                 "{zt_kennung}",
-                self.zt_kennung.as_ref().ok_or("zt_kennung not set.")?,
+                self.zt_kennung
+                    .as_ref()
+                    .ok_or("zt_kennung not set in production mode.")?,
             );
             xml_param = xml_param.replace(
                 "{passwd_zt_kennung}",
                 self.passwd_zt_kennung
                     .as_ref()
-                    .ok_or("passwd_zt_kennung not set.")?,
+                    .ok_or("passwd_zt_kennung not set in production mode.")?,
             );
         }
         let url = {
@@ -213,18 +277,22 @@ impl Sendungsverfolgung {
             if self.sandbox {
                 self.entwickler_id
                     .as_ref()
-                    .ok_or("entwickler_id not set.")?
+                    .ok_or("entwickler_id not set in sandbox mode.")?
             } else {
-                self.app_id.as_ref().ok_or("app_id not set.")?
+                self.app_id
+                    .as_ref()
+                    .ok_or("app_id not set in production mode.")?
             }
         };
         let auth_password = {
             if self.sandbox {
                 self.passwd_entwicklerportal
                     .as_ref()
-                    .ok_or("passwd_entwicklerportal not set.")?
+                    .ok_or("passwd_entwicklerportal not set sandbox mode.")?
             } else {
-                self.app_token.as_ref().ok_or("app_token not set.")?
+                self.app_token
+                    .as_ref()
+                    .ok_or("app_token not set in production mode.")?
             }
         };
 
