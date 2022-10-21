@@ -1,6 +1,6 @@
 [package]
 name = "dhl_tracking"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 description = "DHL Tracking for Business Customers"
 homepage = "https://github.com/Thomas-Zenkel/dhl_tracking"
