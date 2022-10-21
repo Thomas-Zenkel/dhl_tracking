@@ -3,7 +3,7 @@ use dhl_tracking::SendungsverfolgungBuilder;
 fn main() {
     let sv = SendungsverfolgungBuilder::new()
         .sandbox(true)
-        .passwd_entwicklerportal("your login-password entwicklerportal".to_string())
+        .passwd_entwicklerportal("your login-password entwicklerportal".to_owned())
         .entwickler_id("EntwicklerID from Konto".to_owned())
         .build()
         .unwrap();

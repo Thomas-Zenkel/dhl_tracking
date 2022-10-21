@@ -24,6 +24,7 @@ static PRODUCTION_XML_PARAM: &str = r#"<?xml version="1.0" encoding="UTF-8" stan
 /// Builds Sendungsverfolgung Struct for Production
 /// ```
 /// use dhl_tracking::SendungsverfolgungBuilder;
+///
 /// let sendungsverfolgung = SendungsverfolgungBuilder::new()
 /// .zt_kennung("ztxxxxx".to_owned())
 /// .passwd_zt_kennung("your password".to_owned())
@@ -209,6 +210,7 @@ impl SendungsverfolgungBuilder {
 /// Builds Sendungsverfolgung Struct for Production
 /// ```
 /// use dhl_tracking::SendungsverfolgungBuilder;
+///
 /// let sendungsverfolgung = SendungsverfolgungBuilder::new()
 /// .zt_kennung("ztxxxxx".to_owned())
 /// .passwd_zt_kennung("your password".to_owned())
